@@ -1,0 +1,61 @@
+{
+  "kind": "collectionType",
+  "collectionName": "packages",
+  "info": {
+    "singularName": "package",
+    "pluralName": "packages",
+    "displayName": "package",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "title": {
+      "type": "text",
+      "required": true
+    },
+    "higlighted": {
+      "type": "boolean",
+      "default": false,
+      "required": true
+    },
+    "custom_banner": {
+      "type": "media",
+      "multiple": true,
+      "required": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    },
+    "package_images": {
+      "type": "media",
+      "multiple": true,
+      "required": true,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    },
+    "description": {
+      "type": "text",
+      "required": true
+    },
+    "short_description": {
+      "type": "text",
+      "required": true
+    },
+    "package_prices": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::package-price.package-price",
+      "mappedBy": "packages"
+    }
+  }
+}

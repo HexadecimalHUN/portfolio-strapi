@@ -1,0 +1,68 @@
+{
+  "kind": "collectionType",
+  "collectionName": "posts",
+  "info": {
+    "singularName": "post",
+    "pluralName": "posts",
+    "displayName": "post",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "publishDate": {
+      "type": "datetime",
+      "required": true
+    },
+    "shootDate": {
+      "type": "date",
+      "required": true
+    },
+    "images": {
+      "type": "media",
+      "multiple": true,
+      "required": true,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    },
+    "title": {
+      "type": "string",
+      "unique": true,
+      "required": true
+    },
+    "category": {
+      "type": "enumeration",
+      "enum": [
+        "portrait",
+        "wedding",
+        "landscape",
+        "documentary",
+        "nature",
+        "other"
+      ],
+      "default": "other",
+      "required": true
+    },
+    "tag": {
+      "type": "customField",
+      "options": [
+        "tavasz",
+        "nyár",
+        "természet"
+      ],
+      "customField": "plugin::multi-select.multi-select"
+    },
+    "review": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::review.review",
+      "mappedBy": "post"
+    }
+  }
+}

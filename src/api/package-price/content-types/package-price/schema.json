@@ -1,0 +1,44 @@
+{
+  "kind": "collectionType",
+  "collectionName": "package_prices",
+  "info": {
+    "singularName": "package-price",
+    "pluralName": "package-prices",
+    "displayName": "package-price",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "title": {
+      "type": "string"
+    },
+    "price": {
+      "type": "biginteger",
+      "required": true
+    },
+    "packages": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::package.package",
+      "inversedBy": "package_prices"
+    },
+    "items": {
+      "type": "customField",
+      "options": [
+        "Consultation before the shooting event",
+        "Two-hour guided photo session at a picturesque location of your choice",
+        "Expert stitching and editing of panoramic images for seamless composition.",
+        "High-resolution digital copies of the edited panoramas.",
+        "Black and white photo conversions.",
+        "",
+        "",
+        ""
+      ],
+      "required": true,
+      "customField": "plugin::multi-select.multi-select"
+    }
+  }
+}
