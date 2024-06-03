@@ -788,6 +788,36 @@ export interface PluginUsersPermissionsUser extends Schema.CollectionType {
   };
 }
 
+export interface ApiBackgroundBackground extends Schema.CollectionType {
+  collectionName: 'backgrounds';
+  info: {
+    singularName: 'background';
+    pluralName: 'backgrounds';
+    displayName: 'background';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    picture: Attribute.Media & Attribute.Required;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    publishedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<
+      'api::background.background',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<
+      'api::background.background',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+  };
+}
+
 export interface ApiFaqFaq extends Schema.CollectionType {
   collectionName: 'faqs';
   info: {
@@ -1047,6 +1077,7 @@ declare module '@strapi/types' {
       'plugin::users-permissions.permission': PluginUsersPermissionsPermission;
       'plugin::users-permissions.role': PluginUsersPermissionsRole;
       'plugin::users-permissions.user': PluginUsersPermissionsUser;
+      'api::background.background': ApiBackgroundBackground;
       'api::faq.faq': ApiFaqFaq;
       'api::package.package': ApiPackagePackage;
       'api::package-price.package-price': ApiPackagePricePackagePrice;
