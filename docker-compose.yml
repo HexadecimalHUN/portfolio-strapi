@@ -1,23 +1,23 @@
 version: "3.7"
 
 services:
-  strapi:
+  strapi-api:
     image: strapi/strapi:latest
-    container_name: strapi
+    container_name: strapi-api
     restart: unless-stopped
     env_file: .env
     environment:
       DATABASE_CLIENT: sqlite
-      DATABASE_FILENAME: ./data/db.sqlite
+      DATABASE_FILENAME: ./data/api.db.sqlite
       JWT_SECRET: ${JWT_SECRET}
       ADMIN_JWT_SECRET: ${ADMIN_JWT_SECRET}
       APP_KEYS: ${APP_KEYS}
       NODE_ENV: ${NODE_ENV}
     volumes:
-      - ./config:/opt/app/config
-      - ./src:/opt/app/src
-      - ./data:/opt/app/data
-      - ./public/uploads:/opt/app/public/uploads
+      - ./config/api:/opt/app/config
+      - ./src/api:/opt/app/src
+      - ./data/api:/opt/app/data
+      - ./public/uploads/api:/opt/app/public/uploads
     ports:
       - "1337:1337"
     networks:
@@ -31,7 +31,30 @@ services:
       - "traefik.http.services.strapi-api-service.loadbalancer.server.port=1337"
       - "traefik.http.routers.strapi-api-router.service=strapi-api-service"
       - "traefik.http.routers.strapi-api-router.tls=true"
-      - "traefik.http.routers.strapi-api-service=noop@internal"
+
+  strapi-admin:
+    image: strapi/strapi:latest
+    container_name: strapi-admin
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      DATABASE_CLIENT: sqlite
+      DATABASE_FILENAME: ./data/admin.db.sqlite
+      JWT_SECRET: ${JWT_SECRET}
+      ADMIN_JWT_SECRET: ${ADMIN_JWT_SECRET}
+      APP_KEYS: ${APP_KEYS}
+      NODE_ENV: ${NODE_ENV}
+    volumes:
+      - ./config/admin:/opt/app/config
+      - ./src/admin:/opt/app/src
+      - ./data/admin:/opt/app/data
+      - ./public/uploads/admin:/opt/app/public/uploads
+    ports:
+      - "1338:1337"
+    networks:
+      - strapi
+    labels:
+      - "traefik.enable=true"
       # Rules for Strapi Admin
       - "traefik.http.routers.strapi-admin-router.rule=Host(`admin.hadaphoto.hu`)"
       - "traefik.http.routers.strapi-admin-router.entrypoints=websecure"
@@ -42,7 +65,6 @@ services:
       - "traefik.http.middlewares.strapi-admin-replacepathregex.replacement=/\\$${1}"
       - "traefik.http.routers.strapi-admin-router.middlewares=strapi-admin-replacepathregex"
       - "traefik.http.routers.strapi-admin-router.tls=true"
-      - "traefik.http.routers.strapi-admin-service=noop@internal"
 
   reverse-proxy:
     image: traefik:v2.5
