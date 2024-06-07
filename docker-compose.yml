@@ -31,6 +31,7 @@ services:
       - "traefik.http.services.strapi-api-service.loadbalancer.server.port=1337"
       - "traefik.http.routers.strapi-api-router.service=strapi-api-service"
       - "traefik.http.routers.strapi-api-router.tls=true"
+      - "traefik.http.routers.strapi-api-service=noop@internal"
       # Rules for Strapi Admin
       - "traefik.http.routers.strapi-admin-router.rule=Host(`admin.hadaphoto.hu`)"
       - "traefik.http.routers.strapi-admin-router.entrypoints=websecure"
@@ -41,6 +42,7 @@ services:
       - "traefik.http.middlewares.strapi-admin-replacepathregex.replacement=/\\$${1}"
       - "traefik.http.routers.strapi-admin-router.middlewares=strapi-admin-replacepathregex"
       - "traefik.http.routers.strapi-admin-router.tls=true"
+      - "traefik.http.routers.strapi-admin-service=noop@internal"
 
   reverse-proxy:
     image: traefik:v2.5
