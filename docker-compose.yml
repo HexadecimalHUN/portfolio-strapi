@@ -25,18 +25,18 @@ services:
     labels:
       - "traefik.enable=true"
       # Rules for Strapi API
-      - "traefik.http.routers.strapi-api-router.rule=Host(\"api.hadaphoto.hu\")"
+      - "traefik.http.routers.strapi-api-router.rule=Host(`api.hadaphoto.hu`)"
       - "traefik.http.routers.strapi-api-router.entrypoints=websecure"
       - "traefik.http.routers.strapi-api-router.tls.certresolver=myresolver"
-      - "traefik.http.routers.strapi-api-router.service=strapi-api-service"
       - "traefik.http.services.strapi-api-service.loadbalancer.server.port=1337"
+      - "traefik.http.routers.strapi-api-router.service=strapi-api-service"
       - "traefik.http.routers.strapi-api-router.tls=true"
       # Rules for Strapi Admin
-      - "traefik.http.routers.strapi-admin-router.rule=Host(\"admin.hadaphoto.hu\")"
+      - "traefik.http.routers.strapi-admin-router.rule=Host(`admin.hadaphoto.hu`)"
       - "traefik.http.routers.strapi-admin-router.entrypoints=websecure"
       - "traefik.http.routers.strapi-admin-router.tls.certresolver=myresolver"
-      - "traefik.http.routers.strapi-admin-router.service=strapi-admin-service"
       - "traefik.http.services.strapi-admin-service.loadbalancer.server.port=1337"
+      - "traefik.http.routers.strapi-admin-router.service=strapi-admin-service"
       - "traefik.http.middlewares.strapi-admin-replacepathregex.regex=^/admin/(.*)"
       - "traefik.http.middlewares.strapi-admin-replacepathregex.replacement=/\\$${1}"
       - "traefik.http.routers.strapi-admin-router.middlewares=strapi-admin-replacepathregex"
@@ -64,7 +64,7 @@ services:
       - "./letsencrypt:/letsencrypt"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.traefik.rule=Host(\"traefik.hadaphoto.hu\")"
+      - "traefik.http.routers.traefik.rule=Host(`traefik.hadaphoto.hu`)"
       - "traefik.http.routers.traefik.entrypoints=websecure"
       - "traefik.http.routers.traefik.tls.certresolver=myresolver"
       - "traefik.http.routers.traefik.service=api@internal"
