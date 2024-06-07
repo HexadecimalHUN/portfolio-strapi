@@ -1,14 +1,14 @@
 version: "3.7"
+
 services:
   strapi:
+    image: strapi/strapi:latest
     container_name: strapi
-    build: .
-    image: strapi:latest
     restart: unless-stopped
     env_file: .env
     environment:
-      DATABASE_CLIENT: ${DATABASE_CLIENT}
-      DATABASE_FILENAME: ${DATABASE_FILENAME}
+      DATABASE_CLIENT: sqlite
+      DATABASE_FILENAME: ./data/db.sqlite
       JWT_SECRET: ${JWT_SECRET}
       ADMIN_JWT_SECRET: ${ADMIN_JWT_SECRET}
       APP_KEYS: ${APP_KEYS}
@@ -16,41 +16,38 @@ services:
     volumes:
       - ./config:/opt/app/config
       - ./src:/opt/app/src
-      - ./package.json:/opt/package.json
-      - ./yarn.lock:/opt/yarn.lock
-      - ./.env:/opt/app/.env
+      - ./data:/opt/app/data
       - ./public/uploads:/opt/app/public/uploads
     ports:
       - "1337:1337"
     networks:
       - strapi
     labels:
-      #Rules for strapi API
       - "traefik.enable=true"
-      - "traefik.http.routers.strapi-api-router.rule=Host(`api.hadaphoto.hu`)"
+      # Rules for Strapi API
+      - "traefik.http.routers.strapi-api-router.rule=Host(\"api.hadaphoto.hu\")"
       - "traefik.http.routers.strapi-api-router.entrypoints=websecure"
       - "traefik.http.routers.strapi-api-router.tls.certresolver=myresolver"
+      - "traefik.http.routers.strapi-api-router.service=strapi-api-service"
       - "traefik.http.services.strapi-api-service.loadbalancer.server.port=1337"
       - "traefik.http.routers.strapi-api-router.tls=true"
-
       # Rules for Strapi Admin
-      - "traefik.http.routers.strapi-admin-router.rule=Host(`admin.hadaphoto.hu`)"
+      - "traefik.http.routers.strapi-admin-router.rule=Host(\"admin.hadaphoto.hu\")"
       - "traefik.http.routers.strapi-admin-router.entrypoints=websecure"
       - "traefik.http.routers.strapi-admin-router.tls.certresolver=myresolver"
+      - "traefik.http.routers.strapi-admin-router.service=strapi-admin-service"
       - "traefik.http.services.strapi-admin-service.loadbalancer.server.port=1337"
-      - "traefik.http.middlewares.strapi-admin-replacepathregex.replacepathregex.regex=^/admin/(.*)"
-      - "traefik.http.middlewares.strapi-admin-replacepathregex.replacepathregex.replacement=/$${1}"
+      - "traefik.http.middlewares.strapi-admin-replacepathregex.regex=^/admin/(.*)"
+      - "traefik.http.middlewares.strapi-admin-replacepathregex.replacement=/\\$${1}"
       - "traefik.http.routers.strapi-admin-router.middlewares=strapi-admin-replacepathregex"
       - "traefik.http.routers.strapi-admin-router.tls=true"
+
   reverse-proxy:
-    # The official v3 Traefik docker image
     image: traefik:v2.5
-    # Enables the web UI and tells Traefik to listen to docker
     container_name: reverse-proxy
     command:
       - "--api.insecure=true"
       - "--api.dashboard=true"
-      - "--providers.docker"
       - "--providers.docker=true"
       - "--entrypoints.web.address=:80"
       - "--entrypoints.websecure.address=:443"
@@ -59,23 +56,20 @@ services:
       - "--certificatesresolvers.myresolver.acme.email=sajtos0007@gmail.com"
       - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
     ports:
-      # The HTTP port
       - "80:80"
-      # Letsencrypt
       - "443:443"
-      # The Web UI (enabled by --api.insecure=true)
       - "8080:8080"
     volumes:
-      # So that Traefik can listen to the Docker events
       - "/var/run/docker.sock:/var/run/docker.sock"
       - "./letsencrypt:/letsencrypt"
     labels:
-      - "traefik.http.routers.traefik.rule=Host(`traefik.hadaphoto.hu`)"
+      - "traefik.enable=true"
+      - "traefik.http.routers.traefik.rule=Host(\"traefik.hadaphoto.hu\")"
       - "traefik.http.routers.traefik.entrypoints=websecure"
       - "traefik.http.routers.traefik.tls.certresolver=myresolver"
       - "traefik.http.routers.traefik.service=api@internal"
       - "traefik.http.routers.traefik.tls=true"
+
 networks:
   strapi:
-    name: Strapi
     driver: bridge
