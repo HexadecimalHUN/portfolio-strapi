@@ -2,22 +2,23 @@ version: "3.7"
 
 services:
   strapi:
+    build: .
     image: strapi/strapi:latest
     container_name: strapi
     restart: unless-stopped
     env_file: .env
     environment:
       DATABASE_CLIENT: sqlite
-      DATABASE_FILENAME: ./data/db.sqlite
+      DATABASE_FILENAME: /srv/app/data/db.sqlite
       JWT_SECRET: ${JWT_SECRET}
       ADMIN_JWT_SECRET: ${ADMIN_JWT_SECRET}
       APP_KEYS: ${APP_KEYS}
       NODE_ENV: ${NODE_ENV}
     volumes:
-      - ./config:/opt/app/config
-      - ./src:/opt/app/src
-      - ./data:/opt/app/data
-      - ./public/uploads:/opt/app/public/uploads
+      - ./config:/srv/app/config
+      - ./src:/srv/app/src
+      - ./data:/srv/app/data
+      - ./public/uploads:/srv/app/public/uploads
     ports:
       - "1337:1337"
     networks:
@@ -29,11 +30,16 @@ services:
       - "traefik.http.routers.strapi-router.entrypoints=websecure"
       - "traefik.http.routers.strapi-router.tls.certresolver=myresolver"
       - "traefik.http.services.strapi-service.loadbalancer.server.port=1337"
-      - "traefik.http.routers.strapi-router.service=strapi-service"
+      - "traefik.http.services.strapi-service.loadbalancer.server.scheme=http"
+      - "traefik.http.services.strapi-service.loadbalancer.healthcheck.path=/"
+      - "traefik.http.services.strapi-service.loadbalancer.healthcheck.interval=30s"
+      - "traefik.http.services.strapi-service.loadbalancer.server.forwardedHeaders.insecure=true"
       - "traefik.http.routers.strapi-router.tls=true"
-      - "traefik.http.middlewares.strapi-replacepathregex.regex=^/admin/(.*)"
-      - "traefik.http.middlewares.strapi-replacepathregex.replacement=/admin/$${1}"
-      - "traefik.http.routers.strapi-router.middlewares=strapi-replacepathregex"
+      - "traefik.http.services.strapi-service.loadbalancer"
+      - "traefik.http.routers.strapi-router.service=strapi-service"
+      - "traefik.http.services.strapi-service.loadbalancer.sticky.cookie.secure=true"
+      - "traefik.http.services.strapi-service.loadbalancer.sticky.cookie.httpOnly=true"
+      - "traefik.http.services.strapi-service.loadbalancer.sticky.cookie.sameSite=lax"
 
   reverse-proxy:
     image: traefik:v2.5
