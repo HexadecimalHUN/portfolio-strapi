@@ -9,7 +9,7 @@ module.exports = ({ env }) => {
         filename: path.join(
           __dirname,
           '..',
-          env('DATABASE_FILENAME', '.tmp/data.db')
+          env('DATABASE_FILENAME', '/srv/app/data/db.sqlite')
         ),
       },
       useNullAsDefault: true,
