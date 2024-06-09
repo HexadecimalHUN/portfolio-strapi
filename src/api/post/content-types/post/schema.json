@@ -36,33 +36,23 @@
       "unique": true,
       "required": true
     },
-    "category": {
-      "type": "enumeration",
-      "enum": [
-        "portrait",
-        "wedding",
-        "landscape",
-        "documentary",
-        "nature",
-        "other"
-      ],
-      "default": "other",
-      "required": true
-    },
-    "tag": {
-      "type": "customField",
-      "options": [
-        "tavasz",
-        "nyár",
-        "természet"
-      ],
-      "customField": "plugin::multi-select.multi-select"
-    },
     "review": {
       "type": "relation",
       "relation": "oneToOne",
       "target": "api::review.review",
       "mappedBy": "post"
+    },
+    "post_tags": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::post-tag.post-tag",
+      "inversedBy": "posts"
+    },
+    "post_categories": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::post-category.post-category",
+      "inversedBy": "posts"
     }
   }
 }

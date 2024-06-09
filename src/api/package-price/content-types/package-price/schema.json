@@ -25,20 +25,11 @@
       "target": "api::package.package",
       "inversedBy": "package_prices"
     },
-    "items": {
-      "type": "customField",
-      "options": [
-        "Consultation before the shooting event",
-        "Two-hour guided photo session at a picturesque location of your choice",
-        "Expert stitching and editing of panoramic images for seamless composition.",
-        "High-resolution digital copies of the edited panoramas.",
-        "Black and white photo conversions.",
-        "",
-        "",
-        ""
-      ],
-      "required": true,
-      "customField": "plugin::multi-select.multi-select"
+    "package_price_descriptions": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::package-price-description.package-price-description",
+      "inversedBy": "package_prices"
     }
   }
 }

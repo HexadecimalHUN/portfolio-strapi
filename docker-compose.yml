@@ -3,7 +3,7 @@ version: "3.7"
 services:
   strapi:
     build: .
-    image: strapi/strapi:latest
+    image: hexahun/portfolio-strapi:latest
     container_name: strapi
     restart: unless-stopped
     env_file: .env
@@ -33,9 +33,7 @@ services:
       - "traefik.http.services.strapi-service.loadbalancer.server.scheme=http"
       - "traefik.http.services.strapi-service.loadbalancer.healthcheck.path=/"
       - "traefik.http.services.strapi-service.loadbalancer.healthcheck.interval=30s"
-      - "traefik.http.services.strapi-service.loadbalancer.server.forwardedHeaders.insecure=true"
       - "traefik.http.routers.strapi-router.tls=true"
-      - "traefik.http.services.strapi-service.loadbalancer"
       - "traefik.http.routers.strapi-router.service=strapi-service"
       - "traefik.http.services.strapi-service.loadbalancer.sticky.cookie.secure=true"
       - "traefik.http.services.strapi-service.loadbalancer.sticky.cookie.httpOnly=true"
@@ -60,7 +58,9 @@ services:
       - "8080:8080"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
-      - "./letsencrypt:/letsencrypt"
+      - "./letsencrypt:/letsencrypt"  
+    networks:
+      - strapi
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.traefik.rule=Host(`traefik.hadaphoto.hu`)"

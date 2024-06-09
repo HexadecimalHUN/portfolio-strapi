@@ -858,7 +858,6 @@ export interface ApiPackagePackage extends Schema.CollectionType {
     higlighted: Attribute.Boolean &
       Attribute.Required &
       Attribute.DefaultTo<false>;
-    custom_banner: Attribute.Media;
     package_images: Attribute.Media & Attribute.Required;
     description: Attribute.Text & Attribute.Required;
     short_description: Attribute.Text & Attribute.Required;
@@ -867,6 +866,7 @@ export interface ApiPackagePackage extends Schema.CollectionType {
       'manyToMany',
       'api::package-price.package-price'
     >;
+    banner: Attribute.Media & Attribute.Required;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;
@@ -904,21 +904,11 @@ export interface ApiPackagePricePackagePrice extends Schema.CollectionType {
       'manyToMany',
       'api::package.package'
     >;
-    items: Attribute.JSON &
-      Attribute.Required &
-      Attribute.CustomField<
-        'plugin::multi-select.multi-select',
-        [
-          'Consultation before the shooting event',
-          'Two-hour guided photo session at a picturesque location of your choice',
-          'Expert stitching and editing of panoramic images for seamless composition.',
-          'High-resolution digital copies of the edited panoramas.',
-          'Black and white photo conversions.',
-          '',
-          '',
-          ''
-        ]
-      >;
+    package_price_descriptions: Attribute.Relation<
+      'api::package-price.package-price',
+      'manyToMany',
+      'api::package-price-description.package-price-description'
+    >;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;
@@ -930,6 +920,42 @@ export interface ApiPackagePricePackagePrice extends Schema.CollectionType {
       Attribute.Private;
     updatedBy: Attribute.Relation<
       'api::package-price.package-price',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+  };
+}
+
+export interface ApiPackagePriceDescriptionPackagePriceDescription
+  extends Schema.CollectionType {
+  collectionName: 'package_price_descriptions';
+  info: {
+    singularName: 'package-price-description';
+    pluralName: 'package-price-descriptions';
+    displayName: 'package-price-description';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    name: Attribute.Text & Attribute.Required;
+    package_prices: Attribute.Relation<
+      'api::package-price-description.package-price-description',
+      'manyToMany',
+      'api::package-price.package-price'
+    >;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    publishedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<
+      'api::package-price-description.package-price-description',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<
+      'api::package-price-description.package-price-description',
       'oneToOne',
       'admin::user'
     > &
@@ -953,20 +979,20 @@ export interface ApiPostPost extends Schema.CollectionType {
     shootDate: Attribute.Date & Attribute.Required;
     images: Attribute.Media & Attribute.Required;
     title: Attribute.String & Attribute.Required & Attribute.Unique;
-    category: Attribute.Enumeration<
-      ['portrait', 'wedding', 'landscape', 'documentary', 'nature', 'other']
-    > &
-      Attribute.Required &
-      Attribute.DefaultTo<'other'>;
-    tag: Attribute.JSON &
-      Attribute.CustomField<
-        'plugin::multi-select.multi-select',
-        ['tavasz', 'ny\u00E1r', 'term\u00E9szet']
-      >;
     review: Attribute.Relation<
       'api::post.post',
       'oneToOne',
       'api::review.review'
+    >;
+    post_tags: Attribute.Relation<
+      'api::post.post',
+      'manyToMany',
+      'api::post-tag.post-tag'
+    >;
+    post_categories: Attribute.Relation<
+      'api::post.post',
+      'manyToMany',
+      'api::post-category.post-category'
     >;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
@@ -974,6 +1000,76 @@ export interface ApiPostPost extends Schema.CollectionType {
     createdBy: Attribute.Relation<'api::post.post', 'oneToOne', 'admin::user'> &
       Attribute.Private;
     updatedBy: Attribute.Relation<'api::post.post', 'oneToOne', 'admin::user'> &
+      Attribute.Private;
+  };
+}
+
+export interface ApiPostCategoryPostCategory extends Schema.CollectionType {
+  collectionName: 'post_categories';
+  info: {
+    singularName: 'post-category';
+    pluralName: 'post-categories';
+    displayName: 'Post-category';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    Name: Attribute.String;
+    posts: Attribute.Relation<
+      'api::post-category.post-category',
+      'manyToMany',
+      'api::post.post'
+    >;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    publishedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<
+      'api::post-category.post-category',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<
+      'api::post-category.post-category',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+  };
+}
+
+export interface ApiPostTagPostTag extends Schema.CollectionType {
+  collectionName: 'post_tags';
+  info: {
+    singularName: 'post-tag';
+    pluralName: 'post-tags';
+    displayName: 'Post-tag';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    Name: Attribute.String & Attribute.Required;
+    posts: Attribute.Relation<
+      'api::post-tag.post-tag',
+      'manyToMany',
+      'api::post.post'
+    >;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    publishedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<
+      'api::post-tag.post-tag',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<
+      'api::post-tag.post-tag',
+      'oneToOne',
+      'admin::user'
+    > &
       Attribute.Private;
   };
 }
@@ -1081,7 +1177,10 @@ declare module '@strapi/types' {
       'api::faq.faq': ApiFaqFaq;
       'api::package.package': ApiPackagePackage;
       'api::package-price.package-price': ApiPackagePricePackagePrice;
+      'api::package-price-description.package-price-description': ApiPackagePriceDescriptionPackagePriceDescription;
       'api::post.post': ApiPostPost;
+      'api::post-category.post-category': ApiPostCategoryPostCategory;
+      'api::post-tag.post-tag': ApiPostTagPostTag;
       'api::review.review': ApiReviewReview;
       'api::slideshow.slideshow': ApiSlideshowSlideshow;
     }

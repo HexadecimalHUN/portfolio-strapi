@@ -21,17 +21,6 @@
       "default": false,
       "required": true
     },
-    "custom_banner": {
-      "type": "media",
-      "multiple": true,
-      "required": false,
-      "allowedTypes": [
-        "images",
-        "files",
-        "videos",
-        "audios"
-      ]
-    },
     "package_images": {
       "type": "media",
       "multiple": true,
@@ -56,6 +45,17 @@
       "relation": "manyToMany",
       "target": "api::package-price.package-price",
       "mappedBy": "packages"
+    },
+    "banner": {
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ],
+      "type": "media",
+      "multiple": false,
+      "required": true
     }
   }
 }
